@@ -17,9 +17,15 @@
 
 
 #include <SIM800.h>
-#include <SoftwareSerial.h>
 
-SoftwareSerial simCom (DEF_RX_PIN, DEF_TX_PIN);
+//#include <SoftwareSerial.h>
+//SoftwareSerial simCom (DEF_RX_PIN, DEF_TX_PIN); // if you want to use SoftwareSerial instead of HardwareSerial.
+
+#define simCom Serial1  //Serial ESP8266
+//#define SERIAL_RX_BUFFER_SIZE 256 //default 64. You should change it in HardwareSerial.h . Note: in ESP8266 Harwareserial buffer is 128Charecters and you can't change it.
+// #define _SS_MAX_RX_BUFF 1024 //default 64, SoftwareSerial
+//#define SERIAL_TX_BUFFER_SIZE 256 //default 64 .You should change it in HardwareSerial.h . Note: in ESP8266 Harwareserial buffer is 128Charecters and you can't change it.
+// #define _SS_MAX_TX_BUFF 1024 //default 64, SoftwareSerial
 
 
 // ============================================================
@@ -49,29 +55,31 @@ void SIM800::print(char* out) {                                 // This method a
 
 // ============================================================
 bool SIM800::available() {                                      // Checks if the SIM800 module has sent an Unsolicited Result Code.
-    read();                                                     // Example: when someone phonecalls into the module, it sends out "RING" message.
-    if (strlen(ioBuffer) > 0) {                                 // If the call to read() resulted in the presence of values not equal to zero in the ioBuffer array,
-        return true;                                            // indicate that the ioBuffer now contains an URC sent from the SIM800 chip.
-    }
+    if(simCom.available()){ //added by Hamid
+		read();                                                     // Example: when someone phonecalls into the module, it sends out "RING" message.
+		if (strlen(ioBuffer) > 0) {                                 // If the call to read() resulted in the presence of values not equal to zero in the ioBuffer array,
+			return true;                                            // indicate that the ioBuffer now contains an URC sent from the SIM800 chip.
+		}
+	}
     return false;                                               // Otherwise, indicate that ioBuffer is still empty and hence, no URC has been sent from the SIM800 chip.
 }
 
 
 // ============================================================
 void SIM800::setTimeout(uint16_t limit) {                       // Sets read() max time limit to the user specified value in milliseconds.
-    timeLimit = 1000 * (unsigned long)limit;                    // Multiplies the provided millisecond value with 1000 to get microseconds, 
-}                                                               // because the internal timeOut method uses micros() to calculate timeout.
+    timeLimit = (unsigned long)limit; //(*1000) mod by Hamid                    // Multiplies the provided millisecond value with 1000 to get milliseconds, 
+}                                                               // because the internal timeOut method uses millis() to calculate timeout.
 
 
 // ============================================================
 void SIM800::resetTimeout() {                                   // Resets read() max time limit to the millisecond value defined in SIM800.h file.
-    timeLimit = 1000 * DEF_TIME_LIMIT;                          // Multiplies the provided millisecond value with 1000 to get microseconds, 
-}                                                               // because the internal timeOut method uses micros() to calculate timeout.
+    timeLimit = DEF_TIME_LIMIT;//(*1000) mod by Hamid                           // Multiplies the provided millisecond value with 1000 to get milliseconds, 
+}                                                               // because the internal timeOut method uses millis() to calculate timeout.
 
 
 // ============================================================
 uint16_t SIM800::getTimeout() {                                 // Returns the currently active read() max time limit in milliseconds.
-    return (uint16_t)(timeLimit / 1000);                        // Since timeLimit is internally stored in microseconds, it has to be divided by 1000 to give out a value in milliseconds.
+    return (uint16_t)(timeLimit); //(/1000) mod by Hamid      // Since timeLimit is internally stored in milliseconds, it has to be divided by 1000 to give out a value in milliseconds.
 }
 
 
@@ -131,7 +139,7 @@ void SIM800::read() {                                           // The main func
     timeOut(INIT);                                              // Initial timestamp is taken to calculate the reply timeout.
     while (!simCom.available()) {                               // If the module does not reply at all, indicate timeout.
         if (timeOut(RUN)) {
-            strcat_P(ioBuffer, P("TIMEOUT"));
+            strcat_P(ioBuffer, P("TIMEOUT")); 
             break;
         }
     }
@@ -167,7 +175,7 @@ bool SIM800::timeOut(TimerType cmd) {                           // The main time
     static unsigned long timeStamp;                             // If execution duration has exceeded set time limit, returns true. Else returns false.
     static bool benchmark = false;                              // Benchmark is most useful if detectEndStr is enabled, otherwise it will just return the max timeLimit.
     
-    unsigned long currentTime = micros();                       // Each call to timeOut gets the current time first before deciding what to output.
+    unsigned long currentTime = millis(); //millis() mod by Hamid                      // Each call to timeOut gets the current time first before deciding what to output.
 
     switch (cmd) {
         case DELAY:
