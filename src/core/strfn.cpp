@@ -20,8 +20,17 @@
 
 
 // ============================================================
-bool SIM800::reply(char* str) {                                     // Checks if the reply received from the SIM800 module contains the string provided by the user.
-    char* chp = strstr(ioBuffer, str);                              // If the string is present in the ioBuffer, char* chp != 0 and returns true.
+bool SIM800::reply(const char* str, bool inFlash) {	// Checks if the reply received from the SIM800 module contains the string provided by the user.
+	char* chp;
+	if(inFlash){
+		chp = strstr_P(ioBuffer, str);                              // If the string is present in the ioBuffer, char* chp != 0 and returns true.
+	}
+	else{
+		char _str[strlen(str)+1]; // if input has not null terminated
+		strcpy(_str, str);
+		chp = strstr(ioBuffer, _str);                              // If the string is present in the ioBuffer, char* chp != 0 and returns true.
+	}
+	
     if (chp != 0) {                                                 // Can be used as: if (reply("string")) {do this}
         return true;
     }
@@ -31,7 +40,7 @@ bool SIM800::reply(char* str) {                                     // Checks if
 
 // ============================================================
 bool SIM800::isError() {                                            // Shortcut to: if (reply("OK")) {...}
-    return reply("OK") ? false : true;                              // Can be used as: if (isError) errorHandler(); (errorHandler() must be created by the user in their sketch)
+    return reply(P("OK")) ? false : true;                              // Can be used as: if (isError) errorHandler(); (errorHandler() must be created by the user in their sketch)
 }
 
 
@@ -109,3 +118,32 @@ bool SIM800::endOfTx(uint32_t i) {                                          // M
 
     return false;
 }
+
+//=============================================================
+char* SIM800::subStr(char* str, const char *delim, int index) {  // Function to return a substring defined by a delimiter at an index
+   char *act, *sub, *ptr;
+   static char copy[MAX_STRING_LEN];
+   int i;
+
+   // Since strtok consumes the first arg, make a copy
+   strcpy(copy, str);
+
+   for (i = 1, act = copy; i <= index; i++, act = NULL) {
+      //Serial.print(".");
+      sub = strtok_r(act, delim, &ptr);
+      if (sub == NULL) break;
+   }
+   return sub;
+   
+}
+
+/* char *SIM800::get_token(char *str, const char *delimiter, unsigned int which_token){
+	token = strtok_r(str, delimiter, &last);//first token (all charecters befor delimiter).
+											 //strtok() is NOT reentrant ( can be interrupted in the middle of its execution, and then be safely called again).
+											 //For a reentrant version of this function see strtok_r(). 
+	for (int i=1; i<which_token; i++){
+		token = strtok_r(NULL, delimiter, &last);// 2nd 3rd 4th .... token
+		if(token==NULL) break;
+	}
+	return token;
+} */
