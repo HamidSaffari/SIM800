@@ -40,7 +40,7 @@ private:
     char ioBuffer[DEF_BUFFER_SIZE];             // The char array which holds outgoing commands and incoming replies.
     
     unsigned long serialSpeed;                  // Contains the baudrate in use.
-    unsigned long timeLimit;                    // Contains the read() time limit value in microseconds.
+    unsigned long timeLimit;                    // Contains the read() time limit value in milliseconds.
     char endChar = 10;                          // The char to look for in the reply string. If set to 255, detectEndStr is disabled.
     uint32_t slicePoint = 0;                    // The received character index from which the reply should be saved into ioBuffer.
     unsigned long benchTime = 0;                // Contains the value of the last cmd processing duration.
