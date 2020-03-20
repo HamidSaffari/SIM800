@@ -17,15 +17,17 @@
 
 
 public:
-    bool reply(char*);              // Returns true if char[] arg is found in ioBuffer.
+    bool reply(const char*, bool = true);    // Returns true if char[] arg is found in ioBuffer.
     bool isError();                 // Shortcut to reply("OK").
     char* getBuffer();              // Returns the raw ioBuffer. Useful for saving data from ioBuffer to external devices.
     void clearBuffer();             // Erases the contents of ioBuffer by filling it with zeroes.
     void formatReply(bool);         // Selects if replaceEscapeChars() is executed after each call to read().
-                                    // reply(str) might not work properly if formatReply(false) is called.
+                                    // reply(str) might not work properly if formatReply(false) is called.							
+	char* subStr(char* ,const char*, int)// Function to return a substring defined by a delimiter at an index.
+	
 private: 
     void replaceEscapeChars();                                      // Method responsible for replacing non-readable ascii chars with spaces. Destroys formatting of other charsets.
-    void outBuilder(CmdType, char *, const char *, bool = true);    // Called by each AT wrapper method. Builds the AT cmd which is sent to the SIM800 module.
+    void outBuilder(CmdType, char *, const char *, bool = true); // bool inFlash. Called by each AT wrapper method. Builds the AT cmd which is sent to the SIM800 module.
     bool endOfTx(uint32_t);                                         // Method responsible for detecting the presence of end strings "OK" and "ERROR" in ioBuffer, if enabled.
 
     bool fmtReplyEnable = true;      // If true, replaceEscapeChars() is executed after each call to read(). 
