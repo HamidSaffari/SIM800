@@ -17,6 +17,6 @@
 
 
 #include <SIM800.h>
-static SIM800 SIM;          // A single instance of SIM800 object on which 
+/*static*/ SIM800 SIM;      // A single instance of SIM800 object on which 
                             // the methods of this library must be called. 
                             // Example: SIM.test();
