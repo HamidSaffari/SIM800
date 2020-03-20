@@ -25,7 +25,7 @@ public:
     /* AT+CMGF    113 */    void smsFormat         (CmdType, char* = "");
     /* AT+CMGL    114 */    void smsList           (CmdType, char* = "");
     /* AT+CMGR    117 */    void smsRead           (CmdType, char* = "");
-    /* AT+CMGS    120 */    void smsSend           (char*, char*);
+    /* AT+CMGS    120 */    void smsSend           (char*, const char*, bool = true); //bool text_inFlash
     /* AT+CMGW    121 */    void smsWriteToStore   (char*, char*);
     /* AT+CMSS    123 */    void smsSendFromStore  (CmdType, char* = "");
     /* AT+CNMI    124 */    void smsNotifyNew      (CmdType, char* = "");
