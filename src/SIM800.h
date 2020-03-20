@@ -23,13 +23,15 @@
 #include <avr/pgmspace.h>                       // All AT commands are stored in PROGMEM to unburden the SRAM and to make it possible to implement all 336 of them.
 #define P(str) PSTR(str)                        // Helper definition. P() does the same for char[] what F() does for String objects (stores them in PROGMEM).
 
-#define DEBUG                                   // Uncomment this line to enable Serial Monitor output from this library.
+//#define DEBUG                                 // Uncomment this line to enable Serial Monitor output from this library.
 
-#define DEF_RX_PIN  10                          // RX pin of Arduino. Must be connected to the TX pin of the SIM800 module.
-#define DEF_TX_PIN  11                          // TX pin of Arduino. Must be connected to the RX pin of the SIM800 module.
+#define No_ATCMDS                               // do not compile ant AT Commands functions
+
+//#define DEF_RX_PIN  10                        // RX pin of Arduino. Must be connected to the TX pin of the SIM800 module. if using SoftwareSerial
+//#define DEF_TX_PIN  11                        // TX pin of Arduino. Must be connected to the RX pin of the SIM800 module. if using SoftwareSerial
 #define DEF_SPEED   19200                       // The default baudrate which is used if the user calls "void bauds(unsigned long)" (in simserial.h) without arguments.
-#define DEF_TIME_LIMIT  1000                    // The default max time duration in milliseconds to wait for a reply from the SIM800 chip.
-#define DEF_BUFFER_SIZE  300                    // Size of the char[] ioBuffer which is used to buffer outgoing commands and incoming replies.
+#define DEF_TIME_LIMIT  700 //1000              // The default max time duration in milliseconds to wait for a reply from the SIM800 chip.
+#define DEF_BUFFER_SIZE  750 //300              // Size of the char[] ioBuffer which is used to buffer outgoing commands and incoming replies.
 
 enum CmdType {TEST, GET, SET, EXE};             // Valid cmd types for AT cmd wrapper methods. Most AT methods don't support all CmdTypes. User must consult with official AT cmd manual.
 
@@ -44,8 +46,11 @@ class SIM800 {
     #include <core/debug.h>                     // Contains the main Serial Monitor output functionality. This is compiled only if #define DEBUG is uncommented in this file.
     
     // ATCMDS
+  #ifndef No_ATCMDS
+	#include <atcmds/bluetooth.h>               // Bluetooth functionality for SIM800C
     #include <atcmds/calls.h>                   // Voice calls functionality.
     #include <atcmds/email.h>                   // Access e-mail through SMTP or POP3.
+    #include <atcmds/fm.h>                      // FM Radio functionality for SIM800L
     #include <atcmds/ftp.h>                     // Download and upload files through FTP.
     #include <atcmds/general.h>                 // General phone functionality.
     #include <atcmds/gprs.h>                    // General Purpose Radio Service.
@@ -55,6 +60,7 @@ class SIM800 {
     #include <atcmds/sms.h>                     // Main SMS functionality.
     #include <atcmds/stk.h>                     // SIM Application Toolkit.
     #include <atcmds/ip.h>                      // Connect with servers through TCP or UDP.
+  #endif
      
 }; extern SIM800 SIM;                           // Instantiate a single SIM800 object in SIM800.cpp on which all methods of this library must be called. Example: SIM.test();
 
