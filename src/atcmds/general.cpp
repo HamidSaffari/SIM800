@@ -183,8 +183,10 @@ void SIM800::pbWrite(CmdType type, char* str) {
 
 // ============================================================
 void SIM800::pinCode(CmdType type, char* str) {
-    outBuilder(type, str, P("CPIN"));
-    print(ioBuffer);
+	char _str[strlen(str)+1];
+	strcpy(_str, str);
+    outBuilder(type, _str, P("CPIN"));
+    print(ioBuffer); 
 }
 
 // ============================================================
