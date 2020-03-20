@@ -60,7 +60,11 @@ void SIM800::httpSave(CmdType type) {
     outBuilder(type, "", P("HTTPSCONT"));
     print(ioBuffer);
 }
-
+// ============================================================
+void SIM800::httpSSL(CmdType type, char* str) {
+    outBuilder(type, str, P("HTTPSSL"));
+    print(ioBuffer);
+}
 // ============================================================
 void SIM800::httpStatus(CmdType type) {
     outBuilder(type, "", P("HTTPSTATUS"));
