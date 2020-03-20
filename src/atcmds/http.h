@@ -26,6 +26,7 @@ public:
     /* AT+HTTPPARA     257 */    void httpParams  (CmdType, char* = "");
     /* AT+HTTPDATA     259 */    void httpData    (CmdType, char* = "");
     /* AT+HTTPACTION   259 */    void httpAction  (CmdType, char* = "");
+    /* AT+HTTPSSL      259 */    void httpSSL     (CmdType, char* = "");
     /* AT+HTTPREAD     261 */    void httpRead    (CmdType, char* = "");
     /* AT+HTTPSCONT    262 */    void httpSave    (CmdType);
     /* AT+HTTPSTATUS   263 */    void httpStatus  (CmdType);
