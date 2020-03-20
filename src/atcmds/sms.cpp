@@ -39,14 +39,27 @@ void SIM800::smsList(CmdType type, char* str) {
 
 // ============================================================
 void SIM800::smsRead(CmdType type, char* str) {
-    outBuilder(type, str, P("CMGR"));
+	char _str[strlen(str)+1];
+	strcpy(_str, str);
+    outBuilder(type, _str, P("CMGR"));
     print(ioBuffer);
 }
 
 // ============================================================
-void SIM800::smsSend(char* addr_len, char* txt_pdu) {
-    outBuilder(EXE, addr_len, P("AT+CMGS="), false);
-    smsHelper(txt_pdu);
+void SIM800::smsSend(char* addr_len, const char* txt_pdu, bool text_inFlash) {
+	
+	if(text_inFlash){
+		char _txt_pdu[strlen_P(txt_pdu)+1];
+		strcpy_P(_txt_pdu, txt_pdu);
+		outBuilder(EXE, addr_len, P("AT+CMGS="), false);
+		smsHelper(_txt_pdu);
+	}
+	else{
+		char _txt_pdu[strlen(txt_pdu)+1];
+		strcpy(_txt_pdu, txt_pdu);
+		outBuilder(EXE, addr_len, P("AT+CMGS="), false);
+		smsHelper(_txt_pdu);
+	}
 }
 
 // ============================================================
@@ -123,6 +136,6 @@ void SIM800::smsHelper(char* txt_pdu) {
     delay(100);
     outBuilder(EXE, txt_pdu, "", false);
     strcat_P(ioBuffer, P("\x1A"));
-    overrideTimeout(10000);
+    //overrideTimeout(6000);//// 10000
     print(ioBuffer);
 }
